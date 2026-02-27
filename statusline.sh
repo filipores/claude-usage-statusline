@@ -54,18 +54,20 @@ import sys,json
 from datetime import datetime,timezone
 d=json.load(sys.stdin)
 h5=int((d.get('five_hour') or {}).get('utilization',0))
-d7=int((d.get('seven_day') or {}).get('utilization',0))
+d7=d.get('seven_day')
+d7s=str(int(d7['utilization']))+'% 7d' if d7 and d7.get('utilization') is not None else ''
 r=((d.get('five_hour') or {}).get('resets_at','') or '').replace('Z','+00:00')
 try:
   s=int((datetime.fromisoformat(r)-datetime.now(timezone.utc)).total_seconds())
   rel='now' if s<=0 else f'{s//60}m' if s<3600 else f'{s//3600}h{(s%3600)//60:02d}m'
 except: rel='?'
-print(h5,d7,rel)
+print(f'{h5}\t{rel}\t{d7s}')
 " 2>/dev/null || echo "")
   if [[ -n "$PARTS" ]]; then
-    read -r H5 D7 REL <<< "$PARTS"
-    printf '\xe2\x9a\xa1 %s 5h \xe2\x86\xbb%s \xe2\x94\x82 %s%% 7d \xe2\x94\x82 ctx:%s%% \xe2\x94\x82 %s \xe2\x94\x82 %s\n' \
-      "$(color_pct "$H5")" "$REL" "$D7" "$CTX" "$MODEL" "$DIR"
+    IFS=$'\t' read -r H5 REL D7 <<< "$PARTS"
+    OUT="⚡ $(color_pct "$H5") 5h ↻${REL}"
+    [[ -n "$D7" ]] && OUT="$OUT │ $D7"
+    printf '%s │ ctx:%s%% │ %s │ %s\n' "$OUT" "$CTX" "$MODEL" "$DIR"
     exit 0
   fi
 fi
