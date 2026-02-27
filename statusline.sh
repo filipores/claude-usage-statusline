@@ -5,14 +5,13 @@ CACHE="/tmp/claude-usage-cache.json"
 
 # Parse all stdin fields in one python3 call (tab-delimited for spaces in model name)
 INPUT=$(cat)
-IFS=$'\t' read -r MODEL CTX DIR < <(printf '%s' "$INPUT" | python3 -c "
+IFS=$'\t' read -r MODEL DIR < <(printf '%s' "$INPUT" | python3 -c "
 import sys,json
 d=json.load(sys.stdin)
 cdir=d.get('workspace',{}).get('current_dir','/')
 print(d.get('model',{}).get('display_name','?'),
-      int(d.get('context_window',{}).get('used_percentage',0)),
       cdir.rsplit('/',1)[-1], sep='\t')
-" 2>/dev/null || echo $'?\t?\t?')
+" 2>/dev/null || echo $'?\t?')
 
 # Append git branch if inside a repo
 BRANCH=$(git -C "$(printf '%s' "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('workspace',{}).get('current_dir','/'))" 2>/dev/null || echo /)" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
@@ -72,10 +71,10 @@ print(f'{h5}\t{rel}\t{d7s}')
     IFS=$'\t' read -r H5 REL D7 <<< "$PARTS"
     OUT="⚡ $(color_pct "$H5") ↻${REL}"
     [[ -n "$D7" ]] && OUT="$OUT │ $D7"
-    printf '%s │ ctx:%s%% │ %s │ %s\n' "$OUT" "$CTX" "$MODEL" "$DIR"
+    printf '%s │ %s │ %s\n' "$OUT" "$MODEL" "$DIR"
     exit 0
   fi
 fi
 
 # Fallback: no usage data available
-printf 'ctx:%s%% \xe2\x94\x82 %s \xe2\x94\x82 %s\n' "$CTX" "$MODEL" "$DIR"
+printf '%s \xe2\x94\x82 %s\n' "$MODEL" "$DIR"
