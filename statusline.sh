@@ -8,10 +8,15 @@ INPUT=$(cat)
 IFS=$'\t' read -r MODEL CTX DIR < <(printf '%s' "$INPUT" | python3 -c "
 import sys,json
 d=json.load(sys.stdin)
+cdir=d.get('workspace',{}).get('current_dir','/')
 print(d.get('model',{}).get('display_name','?'),
       int(d.get('context_window',{}).get('used_percentage',0)),
-      d.get('workspace',{}).get('current_dir','/').rsplit('/',1)[-1], sep='\t')
+      cdir.rsplit('/',1)[-1], sep='\t')
 " 2>/dev/null || echo $'?\t?\t?')
+
+# Append git branch if inside a repo
+BRANCH=$(git -C "$(printf '%s' "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('workspace',{}).get('current_dir','/'))" 2>/dev/null || echo /)" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+[[ -n "$BRANCH" ]] && DIR="${DIR}(${BRANCH})"
 
 # Fetch OAuth token (macOS keychain, Linux fallback)
 get_token() {
