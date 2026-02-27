@@ -7,10 +7,10 @@ Show your Claude Pro/Max subscription usage in Claude Code's status line.
 ## What it shows
 
 - **5-hour window** usage % with reset countdown
-- **7-day window** usage %
+- **7-day window** usage % (only shown when applicable)
 - **Context window** usage %
 - **Model name** (e.g. Opus 4)
-- **Project directory**
+- **Project directory** with git branch
 
 ## Install
 
@@ -29,17 +29,18 @@ cd claude-usage-statusline
 ## Output format
 
 ```
-⚡ 37% 5h ↻2h05m │ 26% 7d │ ctx:45% │ Opus 4 │ obojobs
+⚡ 87% ↻1h18m │ ctx:69% │ Opus 4 │ obojobs(main)
 ```
 
 | Segment | Meaning |
 |---------|---------|
-| `37% 5h` | 37% of 5-hour rate limit used |
-| `↻2h05m` | 5-hour window resets in 2h 5min |
-| `26% 7d` | 26% of 7-day rate limit used |
-| `ctx:45%` | Context window 45% full |
+| `87%` | 87% of 5-hour rate limit used (color-coded: green/yellow/red) |
+| `↻1h18m` | 5-hour window resets in 1h 18min |
+| `ctx:69%` | Context window 69% full |
 | `Opus 4` | Active model |
-| `obojobs` | Current project directory |
+| `obojobs(main)` | Project directory and git branch |
+
+On plans with a 7-day limit (e.g. Pro), an additional `26% 7d` segment is shown.
 
 ## How it works
 
