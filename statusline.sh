@@ -53,9 +53,9 @@ if [[ -n "$USAGE" ]]; then
 import sys,json
 from datetime import datetime,timezone
 d=json.load(sys.stdin)
-h5=int(d.get('five_hour',{}).get('utilization',0))
-d7=int(d.get('seven_day',{}).get('utilization',0))
-r=d.get('five_hour',{}).get('resets_at','').replace('Z','+00:00')
+h5=int((d.get('five_hour') or {}).get('utilization',0))
+d7=int((d.get('seven_day') or {}).get('utilization',0))
+r=((d.get('five_hour') or {}).get('resets_at','') or '').replace('Z','+00:00')
 try:
   s=int((datetime.fromisoformat(r)-datetime.now(timezone.utc)).total_seconds())
   rel='now' if s<=0 else f'{s//60}m' if s<3600 else f'{s//3600}h{(s%3600)//60:02d}m'
