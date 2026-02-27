@@ -65,7 +65,7 @@ print(f'{h5}\t{rel}\t{d7s}')
 " 2>/dev/null || echo "")
   if [[ -n "$PARTS" ]]; then
     IFS=$'\t' read -r H5 REL D7 <<< "$PARTS"
-    OUT="⚡ $(color_pct "$H5") 5h ↻${REL}"
+    OUT="⚡ $(color_pct "$H5") ↻${REL}"
     [[ -n "$D7" ]] && OUT="$OUT │ $D7"
     printf '%s │ ctx:%s%% │ %s │ %s\n' "$OUT" "$CTX" "$MODEL" "$DIR"
     exit 0
